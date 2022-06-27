@@ -1,77 +1,72 @@
 package com.hihasan.shaketoinform.views
 
-import android.content.Context
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.room.Room
+import com.hihasan.shaketoinform.constants.DatabaseConstants
+import com.hihasan.shaketoinform.data.entity.BugEntity
 import com.hihasan.shaketoinform.databinding.ActivityMainBinding
-import java.lang.Math.sqrt
-import java.util.*
+import com.hihasan.shaketoinform.utils.BaseDatabase
+import dagger.hilt.android.AndroidEntryPoint
+import java.time.LocalDate
+import java.time.LocalTime
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    @Inject lateinit var mainRepository: MainRepository
+
     private lateinit var binding: ActivityMainBinding
+    private lateinit var viewModel : MainViewModel
+    private lateinit var database: BaseDatabase
 
-    private var sensorManager: SensorManager? = null
-    private var acceleration = 0f
-    private var currentAcceleration = 0f
-    private var lastAcceleration = 0f
 
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         setSupportActionBar(binding.toolbar)
 
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        viewModel = ViewModelProvider(this, MainViewModelFactory(mainRepository)).get(MainViewModel::class.java)
 
-        Objects.requireNonNull(sensorManager)!!
-            .registerListener(sensorListener, sensorManager!!
-                .getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL)
+        database = let {
+            Room.databaseBuilder(it, BaseDatabase::class.java, DatabaseConstants.DATABASE_NAME)
+                .allowMainThreadQueries()
+                .build()
+        }
 
-        acceleration = 10f
-        currentAcceleration = SensorManager.GRAVITY_EARTH
-        lastAcceleration = SensorManager.GRAVITY_EARTH
+        initListeners()
+
     }
 
-    private val sensorListener: SensorEventListener = object : SensorEventListener {
-        override fun onSensorChanged(event: SensorEvent) {
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun initListeners() {
+        binding.content.calculationBtn.setOnClickListener {
+            val calcuate = binding.content.number1.toString().toInt() / binding.content.number2.toString().toInt()
 
-            // Fetching x,y,z values
-            val x = event.values[0]
-            val y = event.values[1]
-            val z = event.values[2]
-            lastAcceleration = currentAcceleration
+            try {
 
-            // Getting current accelerations
-            // with the help of fetched x,y,z values
-            currentAcceleration = sqrt((x * x + y * y + z * z).toDouble()).toFloat()
-            val delta: Float = currentAcceleration - lastAcceleration
-            acceleration = acceleration * 0.9f + delta
+                Toast.makeText(applicationContext, calcuate.toString() , Toast.LENGTH_SHORT).show()
+            } catch (e : Exception){
+                val localTime = LocalTime.now()
+                val localDate = LocalDate.now()
+                val bugEntity = BugEntity(
+                    0,
+                    e.printStackTrace().toString(),
+                    localDate.toString(),
+                    localTime.toString()
+                )
 
-            // Display a Toast message if
-            // acceleration value is over 12
-            if (acceleration > 12) {
-                Toast.makeText(applicationContext, "Shake event detected", Toast.LENGTH_SHORT).show()
+                viewModel.insertBug(bugEntity)
             }
         }
-        override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
-    }
-
-    override fun onResume() {
-        sensorManager?.registerListener(sensorListener, sensorManager!!.getDefaultSensor(
-            Sensor .TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL
-        )
-        super.onResume()
-    }
-
-    override fun onPause() {
-        sensorManager!!.unregisterListener(sensorListener)
-        super.onPause()
     }
 }
