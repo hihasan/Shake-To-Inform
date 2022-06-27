@@ -9,4 +9,7 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="long_message">You seem to be shaking the phone in frustration. Would you like to open the bug report screen?</string>
+    <string name="decline">Decline</string>
+    <string name="accept">Accept</string>
 </resources>

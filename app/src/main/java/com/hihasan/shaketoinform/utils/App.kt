@@ -6,9 +6,12 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.hihasan.shaketoinform.R
 import dagger.hilt.android.HiltAndroidApp
 import java.util.*
+
 
 @HiltAndroidApp
 class App : Application(){
@@ -28,7 +31,7 @@ class App : Application(){
     private var lastAcceleration = 0f
 
     override fun onCreate() {
-        App.ctx = applicationContext
+        ctx = applicationContext
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
         Objects.requireNonNull(sensorManager)!!
@@ -56,23 +59,42 @@ class App : Application(){
 
     private val sensorListener: SensorEventListener = object : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent) {
-
-            // Fetching x,y,z values
             val x = event.values[0]
             val y = event.values[1]
             val z = event.values[2]
             lastAcceleration = currentAcceleration
 
-            // Getting current accelerations
-            // with the help of fetched x,y,z values
             currentAcceleration = Math.sqrt((x * x + y * y + z * z).toDouble()).toFloat()
             val delta: Float = currentAcceleration - lastAcceleration
             acceleration = acceleration * 0.9f + delta
 
-            // Display a Toast message if
-            // acceleration value is over 12
             if (acceleration > 12) {
-                Toast.makeText(applicationContext, "Shake event detected", Toast.LENGTH_SHORT).show()
+
+                val builder = AlertDialog.Builder(ctx)
+                builder.setCancelable(true)
+                builder.setMessage(resources.getString(R.string.long_message))
+                builder.setInverseBackgroundForced(true)
+
+                builder.setNeutralButton(
+                    "Ok"
+                ) { dialog, whichButton -> dialog.dismiss() }
+
+                builder.show()
+
+//                MaterialAlertDialogBuilder(
+//                    App.getAppContext(),
+//                    R.style.MaterialComponents)
+//                    .setMessage(resources.getString(R.string.long_message))
+//                    .setNegativeButton(resources.getString(R.string.decline)) { dialog, which ->
+//                        // Respond to negative button press
+//                        dialog.dismiss()
+//                    }
+//                    .setPositiveButton(resources.getString(R.string.accept)) { dialog, which ->
+//                        // Respond to positive button press
+//                    }
+//                    .show()
+//                val alert: AlertDialog = alrtDialog.create()
+//                alert.show()
             }
         }
         override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
