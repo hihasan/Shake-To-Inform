@@ -13,14 +13,22 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
-
-    <style  name="MaterialComponents" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+    <!--    ThemeOverlay.Material3.MaterialAlertDialog-->
+    <style  name="MaterialComponents" parent="Theme.MaterialComponents">
         <item name="elevation"> 5sp </item>
     </style>
 
     <style name="Theme.ShakeToInform.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="BottomSheetDialogStyle" parent="Theme.MaterialComponents.DayNight.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetModalStyle</item>
+    </style>
+
+    <style name="BottomSheetModalStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bottom_sheet_top_curve</item>
     </style>
 
     <style name="Theme.ShakeToInform.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

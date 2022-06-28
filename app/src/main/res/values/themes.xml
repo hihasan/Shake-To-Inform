@@ -23,6 +23,14 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="BottomSheetDialogStyle" parent="Theme.MaterialComponents.DayNight.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetModalStyle</item>
+    </style>
+
+    <style name="BottomSheetModalStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bottom_sheet_top_curve</item>
+    </style>
+
     <style name="Theme.ShakeToInform.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.ShakeToInform.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

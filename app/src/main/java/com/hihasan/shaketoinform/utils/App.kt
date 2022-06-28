@@ -9,6 +9,7 @@ import android.hardware.SensorManager
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hihasan.shaketoinform.R
+import com.hihasan.shaketoinform.views.MainBottomSheet
 import dagger.hilt.android.HiltAndroidApp
 import java.util.*
 
@@ -69,32 +70,8 @@ class App : Application(){
             acceleration = acceleration * 0.9f + delta
 
             if (acceleration > 12) {
-
-                val builder = AlertDialog.Builder(ctx)
-                builder.setCancelable(true)
-                builder.setMessage(resources.getString(R.string.long_message))
-                builder.setInverseBackgroundForced(true)
-
-                builder.setNeutralButton(
-                    "Ok"
-                ) { dialog, whichButton -> dialog.dismiss() }
-
-                builder.show()
-
-//                MaterialAlertDialogBuilder(
-//                    App.getAppContext(),
-//                    R.style.MaterialComponents)
-//                    .setMessage(resources.getString(R.string.long_message))
-//                    .setNegativeButton(resources.getString(R.string.decline)) { dialog, which ->
-//                        // Respond to negative button press
-//                        dialog.dismiss()
-//                    }
-//                    .setPositiveButton(resources.getString(R.string.accept)) { dialog, which ->
-//                        // Respond to positive button press
-//                    }
-//                    .show()
-//                val alert: AlertDialog = alrtDialog.create()
-//                alert.show()
+//                val reportBottomSheet = MainBottomSheet()
+//                reportBottomSheet.show(supportFragmentManager, "Report Fragment")
             }
         }
         override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
