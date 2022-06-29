@@ -1,6 +1,7 @@
 package com.hihasan.shaketoinform.views
 
 import android.content.Context
+import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -95,7 +96,10 @@ class MainActivity : BaseActivity() {
                 dialog.dismiss()
             }
             .setPositiveButton(resources.getString(R.string.accept)) { dialog, which ->
-                Toast.makeText(applicationContext, "Activity Will Open", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+                val intent = Intent(this@MainActivity, BugActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
             }
             .show()
     }

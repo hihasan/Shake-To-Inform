@@ -13,4 +13,10 @@
     <string name="decline">Decline</string>
     <string name="accept">Accept</string>
     <string name="cancel">Cancel</string>
+    <string name="bug_report">Bug Report</string>
+
+    <string name="bug_tst">Please describe the bug. What did you do? What did you expect to happen? What actually happened?</string>
+    <string name="bug_header">If possible, write the description in English.</string>
+    <string name="bug_body">In order to diagnose problems, logs from this client will be sent with this bug report. This bug report, including the logs and the screenshot, will not be publicly visible.</string>
+    <string name="describe_your_problem_here">Describe your problem here</string>
 </resources>
