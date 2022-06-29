@@ -14,7 +14,7 @@ class HiltModules {
 
     @Provides
     fun provideMainRepository() : MainRepository {
-        val bugDaoInstance = BaseDatabase.getDatabase(ctx = App.getAppContext()!!).bugDao
+        val bugDaoInstance = BaseDatabase.getDatabase(ctx = App.getAppContext()).bugDao
 
         return MainRepository(bugDaoInstance)
     }

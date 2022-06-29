@@ -1,5 +1,10 @@
 package com.hihasan.shaketoinform.views
 
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -7,6 +12,8 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.hihasan.shaketoinform.R
 import com.hihasan.shaketoinform.constants.DatabaseConstants
 import com.hihasan.shaketoinform.data.entity.BugEntity
 import com.hihasan.shaketoinform.databinding.ActivityMainBinding
@@ -15,6 +22,7 @@ import com.hihasan.shaketoinform.utils.BaseDatabase
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -25,6 +33,10 @@ class MainActivity : BaseActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel : MainViewModel
 
+    private var sensorManager: SensorManager? = null
+    private var acceleration = 0f
+    private var currentAcceleration = 0f
+    private var lastAcceleration = 0f
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -37,8 +49,55 @@ class MainActivity : BaseActivity() {
 
         viewModel = ViewModelProvider(this, MainViewModelFactory(mainRepository)).get(MainViewModel::class.java)
 
+        sensorListeners()
+
         initListeners()
 
+    }
+
+    private fun sensorListeners() {
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+
+        Objects.requireNonNull(sensorManager)!!
+            .registerListener(sensorListener, sensorManager!!
+                .getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL)
+
+        acceleration = 10f
+        currentAcceleration = SensorManager.GRAVITY_EARTH
+        lastAcceleration = SensorManager.GRAVITY_EARTH
+
+
+    }
+
+    private val sensorListener: SensorEventListener = object : SensorEventListener {
+        override fun onSensorChanged(event: SensorEvent) {
+            val x = event.values[0]
+            val y = event.values[1]
+            val z = event.values[2]
+            lastAcceleration = currentAcceleration
+
+            currentAcceleration = Math.sqrt((x * x + y * y + z * z).toDouble()).toFloat()
+            val delta: Float = currentAcceleration - lastAcceleration
+            acceleration = acceleration * 0.9f + delta
+
+            if (acceleration > 25) {
+                materialDialog()
+            }
+        }
+        override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
+    }
+
+    private fun materialDialog() {
+        MaterialAlertDialogBuilder(this@MainActivity)
+            .setTitle(resources.getString(R.string.app_name))
+            .setMessage(resources.getString(R.string.long_message))
+            .setNegativeButton(resources.getString(R.string.decline)) { dialog, which ->
+                dialog.dismiss()
+            }
+            .setPositiveButton(resources.getString(R.string.accept)) { dialog, which ->
+                Toast.makeText(applicationContext, "Activity Will Open", Toast.LENGTH_SHORT).show()
+            }
+            .show()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -61,5 +120,18 @@ class MainActivity : BaseActivity() {
                 viewModel.insertBug(bugEntity)
             }
         }
+    }
+
+    override fun onResume() {
+        sensorManager?.registerListener(sensorListener, sensorManager!!.getDefaultSensor(
+            Sensor .TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL
+        )
+
+        super.onResume()
+    }
+
+    override fun onPause() {
+        sensorManager!!.unregisterListener(sensorListener)
+        super.onPause()
     }
 }
