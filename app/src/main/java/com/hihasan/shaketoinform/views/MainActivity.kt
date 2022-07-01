@@ -112,6 +112,7 @@ class MainActivity : BaseActivity() {
                 val calcuate = binding.content.number1.text.toString().toInt() / binding.content.number2.text.toString().toInt()
                 Toast.makeText(applicationContext, calcuate.toString() , Toast.LENGTH_SHORT).show()
             } catch (e :java.lang.Exception){
+                Toast.makeText(applicationContext, "Something went wrong", Toast.LENGTH_SHORT).show()
                 val localTime = LocalTime.now()
                 val localDate = LocalDate.now()
                 val bugEntity = BugEntity(
